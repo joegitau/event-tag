@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: event_tag_c
+    environment:
+      - "POSTGRES_USERNAME=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+      - "TZ=Europe/Helsinki"
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./sql:/docker-entrypoint-initdb.d"
