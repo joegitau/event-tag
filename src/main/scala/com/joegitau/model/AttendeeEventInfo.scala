@@ -5,8 +5,8 @@ import java.time.Instant
 
 case class AttendeeEventInfo(
   id:           Option[Long] = None,
-  eventId:      Int,
-  attendeeId:   Int,
+  eventId:      Long,
+  attendeeId:   Long,
   checkinTime:  Option[Timestamp] = None,
   checkoutTime: Option[Timestamp] = None,
   created:      Option[Instant]   = None,
