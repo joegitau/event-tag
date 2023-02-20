@@ -20,8 +20,9 @@ class AttendeeEventInfoTable(tag: Tag) extends Table[AttendeeEventInfo](tag, "at
 
   def * = (id, eventId, attendeeId, checkinTime, checkoutTime, created, modified) <> (AttendeeEventInfo.tupled, AttendeeEventInfo.unapply)
 
-  def attendeeFK = foreignKey("fk_attendee", attendeeId, Attendees)(_.id.getOrElse(0L))
-  def eventFK    = foreignKey("fk_event", eventId, Events)(_.id.getOrElse(0L))
+  // attendee & events foreignKeys - with onDelete
+  def attendeeFK = foreignKey("fk_attendee", attendeeId, Attendees)(_.id.getOrElse(0L), onDelete = ForeignKeyAction.Cascade)
+  def eventFK    = foreignKey("fk_event", eventId, Events)(_.id.getOrElse(0L), onDelete = ForeignKeyAction.Cascade)
 }
 
 object AttendeeEventInfoTable {

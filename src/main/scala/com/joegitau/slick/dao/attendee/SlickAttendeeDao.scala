@@ -19,22 +19,14 @@ class SlickAttendeeDao(db: Database)(implicit ec: ExecutionContext) extends Atte
     db.run(insertQuery)
   }
 
-  override def getAttendeeById(id: Long): Future[Option[Attendee]] = {
-    val query = queryById(id).result.headOption
+  override def getAttendeeById(id: Long): Future[Option[Attendee]] =
+    db.run(queryById(id).result.headOption)
 
-    db.run(query)
-  }
+  override def getAttendeeByLastName(lastName: String): Future[Option[Attendee]] =
+    db.run(queryByName(lastName).result.headOption)
 
-  override def getAttendeeByLastName(lastName: String): Future[Option[Attendee]] = {
-    val query = queryByName(lastName).result.headOption
-
-    db.run(query)
-  }
-
-
-  override def getAllAttendees: Future[Seq[Attendee]] = {
+  override def getAllAttendees: Future[Seq[Attendee]] =
     db.run(Attendees.result)
-  }
 
   override def updateAttendee(attendee: Attendee): Future[Option[Attendee]] = {
     val updateAction = for {
