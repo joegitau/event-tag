@@ -6,7 +6,7 @@ import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import java.time.Instant
 
 class AttendeeTable(tag: Tag) extends Table[Attendee](tag, "attendees") {
-  def id = column[Option[Long]]("id")
+  def id        = column[Option[Long]]("id")
   def firstName = column[String]("first_name")
   def lastName  = column[String]("last_name")
   def company   = column[String]("company")
@@ -18,5 +18,5 @@ class AttendeeTable(tag: Tag) extends Table[Attendee](tag, "attendees") {
 }
 
 object AttendeeTable {
-  val Attendees: TableQuery[AttendeeTable] = TableQuery[AttendeeTable]
+  lazy val Attendees: TableQuery[AttendeeTable] = TableQuery[AttendeeTable]
 }

@@ -1,6 +1,6 @@
 package com.joegitau.slick.dao.event
 
-import com.joegitau.model.{AttendeeEventInfo, Event}
+import com.joegitau.model.{Attendee, AttendeeEventRelation, Event, PatchEvent}
 
 import scala.concurrent.Future
 
@@ -11,11 +11,15 @@ trait EventDao {
 
   def getAllEvents: Future[Seq[Event]]
 
-  def updateEvent(event: Event): Future[Option[Event]]
+  def updateEvent(id: Long, event: PatchEvent): Future[Option[Event]]
 
-  def deleteEvent(id: Long): Future[Option[Unit]]
+  def deleteEvent(id: Long): Future[String]
 
-  def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Option[AttendeeEventInfo]]
+  def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int]
 
-  def markAttendance(attendeeEventInfo: AttendeeEventInfo): Future[Option[Unit]]
+  def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int]
+
+  def markAttendance(attendeeEventRelation: AttendeeEventRelation): Future[Option[String]]
+
+  def getAttendees(eventId: Long): Future[Seq[Attendee]]
 }

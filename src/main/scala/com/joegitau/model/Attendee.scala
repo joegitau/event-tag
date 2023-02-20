@@ -8,6 +8,6 @@ case class Attendee(
   lastName:  String,
   company:   String,
   email:     String,
-  created:   Option[Instant] = None,
-  modified:  Option[Instant] = None
+  created:   Option[Instant],
+  modified:  Option[Instant]
 )

@@ -6,10 +6,9 @@ import play.api.libs.json.{JsValue, Json}
 trait CustomPostgresProfile extends ExPostgresProfile
   with PgArraySupport
   with PgDate2Support
-  with PgCirceJsonSupport
-  with PgSprayJsonSupport
   with PgHStoreSupport
-  with PgJsonSupport {
+  with PgJsonSupport
+  with PgLTreeSupport {
 
   def pgjson: String = "jsonb"
 
@@ -17,9 +16,8 @@ trait CustomPostgresProfile extends ExPostgresProfile
     with ArrayImplicits
     with DateTimeImplicits
     with JsonImplicits
-    with CirceJsonPlainImplicits
-    with SprayJsonPlainImplicits
-    with HStoreImplicits {
+    with HStoreImplicits
+    with LTreeImplicits {
 
     trait GenericFieldMapping[T] {
       def fromDbString(value: String): T
@@ -31,6 +29,9 @@ trait CustomPostgresProfile extends ExPostgresProfile
 
     implicit val strListTypeMapper: DriverJdbcType[List[String]] =
       new SimpleArrayJdbcType[String]("text").to(_.toList)
+
+    implicit val longListTypeMapper: DriverJdbcType[List[Long]] =
+      new SimpleArrayJdbcType[Long]("bigint").to(_.toList)
 
     implicit val playJsonArrayTypeMapper: DriverJdbcType[List[JsValue]] =
       new AdvancedArrayJdbcType[JsValue](
