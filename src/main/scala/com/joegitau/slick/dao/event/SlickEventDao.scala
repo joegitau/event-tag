@@ -82,7 +82,6 @@ class SlickEventDao(db: Database, attendeeEventDao: AttendeeEventRelationDao)(im
     }
   }
 
-
   override def markAttendance(attendeeEventRelation: AttendeeEventRelation): Future[Option[String]] = ???
 
   override def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int] = {
