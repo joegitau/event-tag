@@ -7,8 +7,7 @@ trait CustomPostgresProfile extends ExPostgresProfile
   with PgArraySupport
   with PgDate2Support
   with PgHStoreSupport
-  with PgJsonSupport
-  with PgLTreeSupport {
+  with PgJsonSupport {
 
   def pgjson: String = "jsonb"
 
@@ -16,16 +15,7 @@ trait CustomPostgresProfile extends ExPostgresProfile
     with ArrayImplicits
     with DateTimeImplicits
     with JsonImplicits
-    with HStoreImplicits
-    with LTreeImplicits {
-
-    trait GenericFieldMapping[T] {
-      def fromDbString(value: String): T
-      def toDbString(value: T): String
-    }
-
-    implicit def GenericFieldTypeMapper[A: GenericFieldMapping]: BaseColumnType[A] =
-      MappedColumnType.base[A, String](implicitly[GenericFieldMapping[A]].toDbString, implicitly[GenericFieldMapping[A]].fromDbString)
+    with HStoreImplicits {
 
     implicit val strListTypeMapper: DriverJdbcType[List[String]] =
       new SimpleArrayJdbcType[String]("text").to(_.toList)

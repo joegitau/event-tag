@@ -1,19 +1,15 @@
 package com.joegitau.slick.dao.event
 
-import com.joegitau.model.{Attendee, AttendeeEventRelation, Event, PatchEvent}
-import com.joegitau.slick.dao.attendeeEventRelation.AttendeeEventRelationDao
+import com.joegitau.model.{Event, PatchEvent}
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
-import com.joegitau.slick.tables.AttendeeEventRelationTable.AttendeeEventRelations
-import com.joegitau.slick.tables.AttendeeTable.Attendees
 import com.joegitau.slick.tables.EventTable.Events
 import com.joegitau.utils.Helpers.OptionFns
 import slick.jdbc.JdbcBackend.Database
 
-import java.sql.Timestamp
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class SlickEventDao(db: Database, attendeeEventDao: AttendeeEventRelationDao)(implicit ec: ExecutionContext) extends EventDao {
+class SlickEventDao(db: Database)(implicit ec: ExecutionContext) extends EventDao {
   private def queryById(id: Long) = Compiled(Events.filter(_.id === id))
 
   override def createEvent(event: Event): Future[Event] = {
@@ -54,12 +50,9 @@ class SlickEventDao(db: Database, attendeeEventDao: AttendeeEventRelationDao)(im
   }
 
   override def deleteEvent(id: Long): Future[String] =
-    db.run(queryById(id).delete) map {
-      case _: Int => s"Successfully deleted Event with id: $id"
-      case _      => s"Event not deleted as Event with id: $id doesn't exist!"
-    }
+    db.run(queryById(id).delete).map(_ => s"Successfully deleted Event with id: $id")
 
-  override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int] = {
+  /* override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int] = {
     val existingRecord = attendeeEventDao.getAttendeeEventRelationByAttendeeAndEvent(attendeeId, eventId)
     existingRecord.flatMap {
       case Some(_) =>
@@ -80,19 +73,17 @@ class SlickEventDao(db: Database, attendeeEventDao: AttendeeEventRelationDao)(im
         val insertQuery = AttendeeEventRelations += attendeeEventRel
         db.run(insertQuery)
     }
-  }
+  } */
 
-  override def markAttendance(attendeeEventRelation: AttendeeEventRelation): Future[Option[String]] = ???
-
-  override def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int] = {
+  /* override def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int] = {
     val deleteQuery = AttendeeEventRelations
       .filter(aer => aer.eventId === eventId && aer.attendeeId === attendeeId)
       .delete
 
     db.run(deleteQuery)
-  }
+  } */
 
-  override def getAttendees(eventId: Long): Future[Seq[Attendee]] = {
+  /* override def getAttendees(eventId: Long): Future[Seq[Attendee]] = {
     val joinQuery = AttendeeEventRelations
       .filter(_.eventId === eventId)
       .join(Attendees) on (_.attendeeId === _.id)
@@ -102,7 +93,7 @@ class SlickEventDao(db: Database, attendeeEventDao: AttendeeEventRelationDao)(im
       .result
 
     db.run(result)
-  }
+  } */
 }
 
 /**
