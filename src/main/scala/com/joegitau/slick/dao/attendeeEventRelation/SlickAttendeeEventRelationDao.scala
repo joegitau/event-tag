@@ -35,7 +35,7 @@ class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext)
     db.run(removeQuery)
   }
 
-  override def getAttendeeInEvent(eventId: Long, attendeeId: Long): Future[Option[Attendee]] = {
+  override def getAttendeeByEventId(eventId: Long, attendeeId: Long): Future[Option[Attendee]] = {
     val query = AttendeeEventRelations
       .filter(r => r.attendeeId === attendeeId && r.eventId === eventId)
       .join(Attendees) on(_.attendeeId === _.id)
@@ -48,7 +48,7 @@ class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext)
     db.run(result)
   }
 
-  override def getAllAttendeesInEvent(eventId: Long): Future[Seq[Attendee]] = {
+  override def getAllAttendeesByEventId(eventId: Long): Future[Seq[Attendee]] = {
     val joinQuery = AttendeeEventRelations
       .filter(_.eventId === eventId)
       .join(Attendees) on(_.attendeeId === _.id) // on((aer, att) => aer.attendeeId === att.id)
@@ -68,6 +68,10 @@ class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext)
 
     db.run(query)
   }
+
+  override def deleteAttendeeEventRelation(id: Long): Future[Int] =
+    db.run(queryById(id).delete)
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // these guys are probably not useful???
@@ -100,19 +104,5 @@ class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext)
     } yield existingAEI
 
     db.run(updateAction)
-  }
-
-  override def deleteAttendeeEventRelation(id: Long): Future[String] = {
-    val deleteAction = for {
-      existingAEI <- queryById(id).result.headOption
-      _           <- existingAEI
-                      .map(_ => queryById(id).delete)
-                      .getOrElse(DBIO.successful(0L))
-    } yield existingAEI
-
-    db.run(deleteAction).map {
-      case Some(_) => s"Successfully deleted AttendeeEventInfo with id: $id"
-      case None    => s"AttendeeEventInfo with id: $id not found!"
-    }
   }
 }

@@ -62,5 +62,5 @@ class EventServiceImpl(eventDao: EventDao,
   }
 
   override def getAttendees(eventId: Long): Future[Seq[Attendee]] =
-    attendeeEventRelationDao.getAllAttendeesInEvent(eventId)
+    attendeeEventRelationDao.getAllAttendeesByEventId(eventId)
 }

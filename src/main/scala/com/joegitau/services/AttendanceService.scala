@@ -26,7 +26,7 @@ class AttendanceServiceImpl(attendanceDao: AttendanceDao,
                              ): Future[String] = {
     for {
       eventOpt       <- eventDao.getEventById(eventId)
-      attendeeOpt    <- attendeeEventRelationDao.getAttendeeInEvent(eventId, eventId)
+      attendeeOpt    <- attendeeEventRelationDao.getAttendeeByEventId(eventId, eventId)
       relationExists <- attendeeEventRelationDao.attendeeEventRelationExists(attendeeId, eventId)
       result         <- if (eventOpt.isDefined && attendeeOpt.isDefined && relationExists) {
         attendanceDao.markAttendance(eventId, attendeeId, checkinTime, checkoutTime)
