@@ -14,7 +14,7 @@ trait EventService {
   def getAllEvents: Future[Seq[Event]]
   def updateEvent(id: Long, event: PatchEvent): Future[Option[Event]]
   def deleteEvent(id: Long): Future[String]
-  def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int]
+  def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[String]
   def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int]
   def getAttendees(eventId: Long): Future[Seq[Attendee]]
 }
@@ -39,22 +39,18 @@ class EventServiceImpl(eventDao: EventDao,
   override def deleteEvent(id: Long): Future[String] =
     eventDao.deleteEvent(id)
 
-  override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int] = {
+  override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[String] = {
     for {
       eventOpt       <- eventDao.getEventById(eventId)
       attendeeOpt    <- attendeeDao.getAttendeeById(attendeeId)
       relationExists <- attendeeEventRelationDao.attendeeEventRelationExists(attendeeId, eventId)
       result         <- if (eventOpt.isDefined && attendeeOpt.isDefined && !relationExists) {
-        attendeeEventRelationDao.addAttendeeToEvent(eventId, attendeeId).map(_ => 1) // we don't need to return the relation
-      } else Future.successful(0)
+        attendeeEventRelationDao.addAttendeeToEvent(eventId, attendeeId).map(_ => "Attendee added to event!") // we don't need to return the relation
+      } else Future.successful("Most likely the attendee doesn't exist or are already added to the event!")
     } yield result
   }
 
   override def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int] = {
-    // 1. get the attendee
-    // 2. get the event
-    // 3. validate relation
-    // remove the attendee
     for {
       eventOpt       <- eventDao.getEventById(eventId)
       attendeeOpt    <- attendeeDao.getAttendeeById(attendeeId)

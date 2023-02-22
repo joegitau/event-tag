@@ -1,10 +1,12 @@
 package com.joegitau.slick.dao.attendee
 
-import com.joegitau.model.Attendee
-import com.joegitau.slick.tables.AttendeeTable.Attendees
+import com.joegitau.model.{Attendee, PatchAttendee}
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
+import com.joegitau.slick.tables.AttendeeTable.Attendees
+import com.joegitau.utils.Helpers.OptionFns
 import slick.jdbc.JdbcBackend.Database
 
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class SlickAttendeeDao(db: Database)(implicit ec: ExecutionContext) extends AttendeeDao {
@@ -28,15 +30,25 @@ class SlickAttendeeDao(db: Database)(implicit ec: ExecutionContext) extends Atte
   override def getAllAttendees: Future[Seq[Attendee]] =
     db.run(Attendees.result)
 
-  override def updateAttendee(attendee: Attendee): Future[Option[Attendee]] = {
-    val updateAction = for {
-      existingAttendee <- queryById(attendee.id.get).result.headOption
-      _                <- existingAttendee
-                           .map(_ => queryById(attendee.id.get).update(attendee))
-                           .getOrElse(DBIO.successful(0L))
-    } yield existingAttendee
+  override def updateAttendee(id: Long, attendee: PatchAttendee): Future[Option[Attendee]] = {
+    val query = queryById(id)
 
-    db.run(updateAction)
+    val updateAction = query.result.headOption.flatMap {
+      case Some(existingAttendee) =>
+        val updatedAttendee = existingAttendee.copy(
+          firstName = attendee.firstName.getOrElse(existingAttendee.firstName),
+          lastName  = attendee.lastName.getOrElse(existingAttendee.lastName),
+          company   = attendee.company.getOrElse(existingAttendee.company),
+          email     = attendee.email.getOrElse(existingAttendee.email),
+          modified  = Instant.now().toOpt
+        )
+
+        query.update(updatedAttendee) >> query.result.headOption
+
+      case None                   => DBIO.successful(None)
+    }
+
+    db.run(updateAction) // .flatMap(_ => getAttendeeById(id))
   }
 
   override def deleteAttendee(id: Long): Future[String] = {
