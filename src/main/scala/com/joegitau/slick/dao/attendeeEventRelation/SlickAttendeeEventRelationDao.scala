@@ -35,6 +35,19 @@ class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext)
     db.run(removeQuery)
   }
 
+  override def getAttendeeInEvent(eventId: Long, attendeeId: Long): Future[Option[Attendee]] = {
+    val query = AttendeeEventRelations
+      .filter(r => r.attendeeId === attendeeId && r.eventId === eventId)
+      .join(Attendees) on(_.attendeeId === _.id)
+
+    val result = query
+      .map { case (_, attendeeTbl) => attendeeTbl }
+      .result
+      .headOption
+
+    db.run(result)
+  }
+
   override def getAllAttendeesInEvent(eventId: Long): Future[Seq[Attendee]] = {
     val joinQuery = AttendeeEventRelations
       .filter(_.eventId === eventId)

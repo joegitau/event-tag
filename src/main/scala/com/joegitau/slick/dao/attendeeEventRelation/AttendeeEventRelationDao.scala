@@ -7,6 +7,7 @@ import scala.concurrent.Future
 trait AttendeeEventRelationDao {
   def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[AttendeeEventRelation]
   def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int]
+  def getAttendeeInEvent(eventId: Long, attendeeId: Long): Future[Option[Attendee]]
   def getAllAttendeesInEvent(eventId: Long): Future[Seq[Attendee]]
   def attendeeEventRelationExists(attendeeId: Long, eventId: Long): Future[Boolean]
 
