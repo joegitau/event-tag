@@ -1,7 +1,6 @@
 package com.joegitau.protocol
 
 import akka.actor.typed.ActorRef
-import akka.pattern.StatusReply
 import com.joegitau.serialization.CborSerializable
 
 object AttendeeEventRelationProtocol {
@@ -10,7 +9,7 @@ object AttendeeEventRelationProtocol {
     case class CheckAttendeeEventRelation(
       attendeeId: Long,
       eventId:    Long,
-      replyTo:    ActorRef[StatusReply[AttendeeEventRelationResponse]]
+      replyTo:    ActorRef[AttendeeEventRelationResponse]
     ) extends AttendeeEventRelationCommand
   }
 
