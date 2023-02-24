@@ -3,7 +3,6 @@ package com.joegitau.slick.tables
 import com.joegitau.model.Event
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 
-import java.sql.Timestamp
 import java.time.Instant
 
 class EventTable(tag: Tag) extends Table[Event](tag, "events") {
@@ -11,8 +10,8 @@ class EventTable(tag: Tag) extends Table[Event](tag, "events") {
   def title       = column[String]("title")
   def description = column[String]("description")
   def location    = column[String]("location")
-  def startDate   = column[Timestamp]("startDate")
-  def endDate     = column[Timestamp]("endDate")
+  def startDate   = column[Instant]("startDate")
+  def endDate     = column[Instant]("endDate")
   def organizer   = column[String]("organizer")
   def created     = column[Option[Instant]]("created")
   def modified    = column[Option[Instant]]("modified")

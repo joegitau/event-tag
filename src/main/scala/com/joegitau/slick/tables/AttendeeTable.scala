@@ -9,7 +9,7 @@ class AttendeeTable(tag: Tag) extends Table[Attendee](tag, "attendees") {
   def id        = column[Option[Long]]("id")
   def firstName = column[String]("first_name")
   def lastName  = column[String]("last_name")
-  def company   = column[String]("company")
+  def company   = column[Option[String]]("company")
   def email     = column[String]("email")
   def created   = column[Option[Instant]]("created")
   def modified  = column[Option[Instant]]("modified")

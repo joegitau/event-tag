@@ -6,7 +6,7 @@ case class Attendee(
   id:        Option[Long]   = None,
   firstName: String,
   lastName:  String,
-  company:   String,
+  company:   Option[String],
   email:     String,
   created:   Option[Instant],
   modified:  Option[Instant]
