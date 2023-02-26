@@ -4,7 +4,7 @@ import com.joegitau.model.{Event, PatchEvent}
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.EventTable.Events
 import com.joegitau.utils.Helpers.OptionFns
-import slick.jdbc.JdbcBackend.Database
+// import slick.jdbc.JdbcBackend.Database
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}

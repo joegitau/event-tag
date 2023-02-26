@@ -21,11 +21,10 @@ object AttendeeEventRelationActor {
       case AttendeeEventRelationCommand.CheckAttendeeEventRelation(attendeeId, eventId, replyTo) =>
         attendeeEventRelationService.attendeeEventRelationExists(attendeeId, eventId).onComplete {
           case Success(exists) =>
-            replyTo ! StatusReply.success(CheckAttendeeEventRelationRsp(exists))
+            replyTo ! CheckAttendeeEventRelationRsp(exists)
           case Failure(ex)     =>
-            replyTo ! StatusReply.error(
-              ErrorMessage(s"Failed to establish relation between eventId: $eventId and attendeeId: $attendeeId. ${ex.getMessage}")
-            )
+            replyTo ! CheckAttendeeEventRelationRsp(false)
+
         }
 
         Behaviors.same

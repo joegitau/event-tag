@@ -14,7 +14,8 @@ trait AttendeeEventRelationService {
   def attendeeEventRelationExists(attendeeId: Long, eventId: Long): Future[Boolean]
 }
 
-class AttendeeEventRelationServiceImpl(attendeeEventRelationDao: AttendeeEventRelationDao)(implicit ec: ExecutionContext) extends AttendeeEventRelationService {
+class AttendeeEventRelationServiceImpl(attendeeEventRelationDao: AttendeeEventRelationDao)
+                                      (implicit ec: ExecutionContext) extends AttendeeEventRelationService {
   override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[AttendeeEventRelation] =
     attendeeEventRelationDao.addAttendeeToEvent(eventId, attendeeId)
 

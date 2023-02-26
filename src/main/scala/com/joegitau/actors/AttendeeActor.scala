@@ -12,7 +12,7 @@ import scala.util.{Failure, Success}
 
 object AttendeeActor {
   def apply(attendeeService: AttendeeService): Behavior[AttendeeCommand] = Behaviors.receive { (ctx, msg) =>
-    implicit val ec = ctx.executionContext
+    implicit val ec = ctx.system.executionContext
 
     ctx.log.info("::: Attendee actor started. :::")
 

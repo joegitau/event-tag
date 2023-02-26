@@ -13,7 +13,7 @@ import scala.util.{Failure, Success}
 
 object EventActor {
   def apply(eventService: EventService): Behavior[EventCommand] = Behaviors.receive { (ctx, msg) =>
-    implicit val ec: ExecutionContextExecutor = ctx.executionContext
+    implicit val ec: ExecutionContextExecutor = ctx.system.executionContext
 
     ctx.log.info("::: Event actor started. :::")
 

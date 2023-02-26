@@ -1,7 +1,6 @@
 package com.joegitau.services
 
 import com.joegitau.model.{Attendee, Event, PatchEvent}
-import com.joegitau.slick.dao.attendance.AttendanceDao
 import com.joegitau.slick.dao.attendee.AttendeeDao
 import com.joegitau.slick.dao.attendeeEventRelation.AttendeeEventRelationDao
 import com.joegitau.slick.dao.event.EventDao
@@ -22,7 +21,6 @@ trait EventService {
 class EventServiceImpl(eventDao: EventDao,
                        attendeeDao: AttendeeDao,
                        attendeeEventRelationDao: AttendeeEventRelationDao,
-                       attendanceDao: AttendanceDao
                       )(implicit ec: ExecutionContext) extends EventService {
   override def createEvent(event: Event): Future[Event] =
     eventDao.createEvent(event)

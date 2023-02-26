@@ -22,7 +22,7 @@ object AttendanceActor {
             attendeeEventRelActorRef: ActorRef[AttendeeEventRelationCommand]
            ): Behavior[AttendanceCommand] = Behaviors.receive { (ctx, msg) =>
 
-    implicit val ec: ExecutionContext = ctx.executionContext
+    implicit val ec: ExecutionContext = ctx.system.executionContext
     implicit val scheduler: Scheduler = ctx.system.scheduler
     implicit val timeout: Timeout     = 3.seconds
 

@@ -5,7 +5,7 @@ import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.AttendeeEventRelationTable.AttendeeEventRelations
 import com.joegitau.slick.tables.AttendeeTable.Attendees
 import com.joegitau.utils.Helpers.OptionFns
-import slick.jdbc.JdbcBackend.Database
+// import slick.jdbc.JdbcBackend.Database
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}

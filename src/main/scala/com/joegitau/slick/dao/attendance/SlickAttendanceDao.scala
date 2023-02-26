@@ -3,7 +3,7 @@ package com.joegitau.slick.dao.attendance
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.AttendanceTable.Attendances
 import com.joegitau.slick.tables.AttendeeEventRelationTable.AttendeeEventRelations
-import slick.jdbc.JdbcBackend.Database
+// import slick.jdbc.JdbcBackend.Database
 
 import java.sql.Timestamp
 import java.time.Instant
