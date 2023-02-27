@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.event
+package com.joegitau.dao.event
 
 import com.joegitau.model.Event
 

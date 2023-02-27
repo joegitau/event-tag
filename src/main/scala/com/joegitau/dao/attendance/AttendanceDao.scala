@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.attendance
+package com.joegitau.dao.attendance
 
 import java.time.Instant
 import scala.concurrent.Future

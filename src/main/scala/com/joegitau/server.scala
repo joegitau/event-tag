@@ -4,11 +4,12 @@ import akka.NotUsed
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorSystem, BackoffSupervisorStrategy, Behavior, SupervisorStrategy}
 import com.joegitau.actors.{AttendanceActor, AttendeeActor, AttendeeEventRelationActor, EventActor}
+import com.joegitau.dao.attendance.AttendanceDaoImpl
+import com.joegitau.dao.attendee.AttendeeDaoImpl
+import com.joegitau.dao.event.EventDaoImpl
+import com.joegitau.dao.relations.AttendeeEventRelationDaoImpl
 import com.joegitau.services._
-import com.joegitau.slick.dao.attendance.SlickAttendanceDao
-import com.joegitau.slick.dao.attendee.SlickAttendeeDao
-import com.joegitau.slick.dao.attendeeEventRelation.SlickAttendeeEventRelationDao
-import com.joegitau.slick.dao.event.SlickEventDao
+import com.joegitau.slick.Connection.Db
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 
 import scala.concurrent.duration.DurationInt
@@ -24,13 +25,11 @@ object server {
       randomFactor = 0.2
     )
 
-    val db = Database.forConfig("postgress")
-
     // DAOs
-    val eventDao            = new SlickEventDao(db)
-    val attendeeDao         = new SlickAttendeeDao(db)
-    val attendanceDao       = new SlickAttendanceDao(db)
-    val attendeeEventRelDao = new SlickAttendeeEventRelationDao(db)
+    val eventDao            = new EventDaoImpl(Db)
+    val attendeeDao         = new AttendeeDaoImpl(Db)
+    val attendanceDao       = new AttendanceDaoImpl(Db)
+    val attendeeEventRelDao = new AttendeeEventRelationDaoImpl(Db)
 
     // services
     val eventService            = new EventServiceImpl(eventDao, attendeeDao, attendeeEventRelDao)

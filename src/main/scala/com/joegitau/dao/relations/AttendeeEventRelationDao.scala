@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.attendeeEventRelation
+package com.joegitau.dao.relations
 
 import com.joegitau.model.{Attendee, AttendeeEventRelation}
 

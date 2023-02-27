@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.attendeeEventRelation
+package com.joegitau.dao.relations
 
 import com.joegitau.model.{Attendee, AttendeeEventRelation}
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
@@ -9,7 +9,7 @@ import com.joegitau.utils.Helpers.OptionFns
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext) extends AttendeeEventRelationDao {
+class AttendeeEventRelationDaoImpl(db: Database)(implicit ec: ExecutionContext) extends AttendeeEventRelationDao {
   private def queryByEventId(eventId: Long)       = Compiled(AttendeeEventRelations.filter(_.eventId === eventId))
   private def queryByAttendeeId(attendeeId: Long) = Compiled(AttendeeEventRelations.filter(_.attendeeId === attendeeId))
 

@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.attendee
+package com.joegitau.dao.attendee
 
 import com.joegitau.model.Attendee
 

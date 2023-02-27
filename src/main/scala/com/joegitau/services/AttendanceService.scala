@@ -1,8 +1,8 @@
 package com.joegitau.services
 
-import com.joegitau.slick.dao.attendance.AttendanceDao
-import com.joegitau.slick.dao.attendeeEventRelation.AttendeeEventRelationDao
-import com.joegitau.slick.dao.event.EventDao
+import com.joegitau.dao.event.EventDao
+import com.joegitau.dao.attendance.AttendanceDao
+import com.joegitau.dao.relations.AttendeeEventRelationDao
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}

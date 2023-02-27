@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.event
+package com.joegitau.dao.event
 
 import com.joegitau.model.Event
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
@@ -8,7 +8,7 @@ import com.joegitau.utils.Helpers.OptionFns
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class SlickEventDao(db: Database)(implicit ec: ExecutionContext) extends EventDao {
+class EventDaoImpl(db: Database)(implicit ec: ExecutionContext) extends EventDao {
   private def queryById(id: Long) = Compiled(Events.filter(_.id === id))
 
   override def createEvent(event: Event): Future[Event] = {

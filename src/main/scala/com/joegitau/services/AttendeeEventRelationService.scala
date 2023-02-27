@@ -1,7 +1,7 @@
 package com.joegitau.services
 
+import com.joegitau.dao.relations.AttendeeEventRelationDao
 import com.joegitau.model.Attendee
-import com.joegitau.slick.dao.attendeeEventRelation.AttendeeEventRelationDao
 
 import scala.concurrent.{ExecutionContext, Future}
 

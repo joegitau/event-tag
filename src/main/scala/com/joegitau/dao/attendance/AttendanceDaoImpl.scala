@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.attendance
+package com.joegitau.dao.attendance
 
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.AttendanceTable.Attendances
@@ -7,7 +7,7 @@ import com.joegitau.slick.tables.AttendeeEventRelationTable.AttendeeEventRelatio
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class SlickAttendanceDao(db: Database)(implicit ec: ExecutionContext) extends AttendanceDao {
+class AttendanceDaoImpl(db: Database)(implicit ec: ExecutionContext) extends AttendanceDao {
   val now: Instant = Instant.now()
 
   override def markAttendance(eventId: Long,

@@ -1,4 +1,4 @@
-package com.joegitau.slick.dao.attendee
+package com.joegitau.dao.attendee
 
 import com.joegitau.model.Attendee
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
@@ -8,7 +8,7 @@ import com.joegitau.utils.Helpers.OptionFns
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class SlickAttendeeDao(db: Database)(implicit ec: ExecutionContext) extends AttendeeDao {
+class AttendeeDaoImpl(db: Database)(implicit ec: ExecutionContext) extends AttendeeDao {
   private def queryById(id: Long) = Compiled(Attendees.filter(_.id === id))
   private def queryByName(name: String) = Compiled(Attendees.filter(_.lastName === name))
 
