@@ -6,11 +6,11 @@ import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import java.time.Instant
 
 class AttendeeTable(tag: Tag) extends Table[Attendee](tag, "attendees") {
-  def id        = column[Option[Long]]("id")
+  def id        = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
   def firstName = column[String]("first_name")
   def lastName  = column[String]("last_name")
   def company   = column[Option[String]]("company")
-  def email     = column[String]("email")
+  def email     = column[String]("email", O.Unique)
   def created   = column[Option[Instant]]("created")
   def modified  = column[Option[Instant]]("modified")
 

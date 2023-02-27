@@ -6,7 +6,7 @@ import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import java.time.Instant
 
 class EventTable(tag: Tag) extends Table[Event](tag, "events") {
-  def id          = column[Option[Long]]("id")
+  def id          = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
   def title       = column[String]("title")
   def description = column[String]("description")
   def location    = column[String]("location")
