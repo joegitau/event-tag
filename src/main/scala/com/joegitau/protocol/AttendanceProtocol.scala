@@ -4,7 +4,7 @@ import akka.actor.typed.ActorRef
 import akka.pattern.StatusReply
 import com.joegitau.serialization.CborSerializable
 
-import java.sql.Timestamp
+import java.time.Instant
 
 object AttendanceProtocol {
   sealed trait AttendanceCommand extends CborSerializable
@@ -12,8 +12,8 @@ object AttendanceProtocol {
     case class MarkAttendance(
       eventId:      Long,
       attendeeId:   Long,
-      checkinTime:  Option[Timestamp],
-      checkoutTime: Option[Timestamp],
+      checkinTime:  Option[Instant],
+      checkoutTime: Option[Instant],
       replyTo:      ActorRef[StatusReply[AttendanceResponse]]
     ) extends AttendanceCommand
   }

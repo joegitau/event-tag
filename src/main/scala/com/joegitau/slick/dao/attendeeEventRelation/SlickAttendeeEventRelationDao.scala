@@ -5,24 +5,17 @@ import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.AttendeeEventRelationTable.AttendeeEventRelations
 import com.joegitau.slick.tables.AttendeeTable.Attendees
 import com.joegitau.utils.Helpers.OptionFns
-// import slick.jdbc.JdbcBackend.Database
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext) extends AttendeeEventRelationDao {
-  private def queryById(id: Long)                 = Compiled(AttendeeEventRelations.filter(_.id === id))
   private def queryByEventId(eventId: Long)       = Compiled(AttendeeEventRelations.filter(_.eventId === eventId))
   private def queryByAttendeeId(attendeeId: Long) = Compiled(AttendeeEventRelations.filter(_.attendeeId === attendeeId))
 
-  override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[AttendeeEventRelation] = {
-    val AER = AttendeeEventRelation(
-      None, eventId, attendeeId, None, None, Instant.now().toOpt, None
-    )
-
-    val action = (
-      AttendeeEventRelations returning AttendeeEventRelations.map(_.id) into ((aer, id) => aer.copy(id = id))
-      ) += AER
+  override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int] = {
+    val aer    = AttendeeEventRelation(eventId, attendeeId, None, None, Instant.now().toOpt, None)
+    val action = AttendeeEventRelations += aer
 
     db.run(action)
   }
@@ -69,15 +62,13 @@ class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext)
     db.run(query)
   }
 
-  override def deleteAttendeeEventRelation(id: Long): Future[Int] =
-    db.run(queryById(id).delete)
+  // FIXME: should query by both eventId and attendeeId
+  override def deleteAttendeeEventRelation(eventId: Long, attendeeId: Long): Future[Int] =
+    db.run(queryByAttendeeId(attendeeId).delete)
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // these guys are probably not useful???
-  override def getAttendeeEventRelationById(id: Long): Future[Option[AttendeeEventRelation]] =
-    db.run(queryById(id).result.headOption)
-
   override def getAttendeeEventRelationsByEventId(eventId: Long): Future[Seq[AttendeeEventRelation]] =
     db.run(queryByEventId(eventId).result)
 
@@ -95,14 +86,4 @@ class SlickAttendeeEventRelationDao(db: Database)(implicit ec: ExecutionContext)
     db.run(query)
   }
 
-  override def updateAttendeeEventRelation(attendeeEventInfo: AttendeeEventRelation): Future[Option[AttendeeEventRelation]] = {
-    val updateAction = for {
-      existingAEI <- queryById(attendeeEventInfo.id.get).result.headOption
-      _           <- existingAEI
-                     .map(_ => queryById(attendeeEventInfo.id.get).update(attendeeEventInfo.copy(modified = Instant.now().toOpt)))
-                     .getOrElse(DBIO.successful(0L))
-    } yield existingAEI
-
-    db.run(updateAction)
-  }
 }

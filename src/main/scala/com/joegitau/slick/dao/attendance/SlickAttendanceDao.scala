@@ -3,9 +3,7 @@ package com.joegitau.slick.dao.attendance
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.AttendanceTable.Attendances
 import com.joegitau.slick.tables.AttendeeEventRelationTable.AttendeeEventRelations
-// import slick.jdbc.JdbcBackend.Database
 
-import java.sql.Timestamp
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,8 +12,8 @@ class SlickAttendanceDao(db: Database)(implicit ec: ExecutionContext) extends At
 
   override def markAttendance(eventId: Long,
                               attendeeId: Long,
-                              checkinTime: Option[Timestamp],
-                              checkoutTime: Option[Timestamp]
+                              checkinTime: Option[Instant],
+                              checkoutTime: Option[Instant]
                              ): Future[String] = {
     // assert existence of relation
     val relationExists = AttendeeEventRelations
@@ -38,6 +36,9 @@ class SlickAttendanceDao(db: Database)(implicit ec: ExecutionContext) extends At
           case Some((None, Some(_))) =>
             // checkin out
             query.update((None, checkoutTime))
+          case Some((Some(_), Some(_))) =>
+            // at no point should we get both values!
+            DBIO.successful("Checkin & checkout shouldn't be possible!")
           case Some((None, None)) =>
             // neither checkin in nor checkin out
             DBIO.successful("Checkin and Checkout times not provided!")
@@ -51,7 +52,7 @@ class SlickAttendanceDao(db: Database)(implicit ec: ExecutionContext) extends At
     db.run(attendanceQuery).map(_ => "Attendance successfully marked!")
   }
 
-  /* override def markCheckin(attendeeId: Long, eventId: Long, checkinTime: Timestamp): Future[Int] = {
+  /* override def markCheckin(attendeeId: Long, eventId: Long, checkinTime: Instant): Future[Int] = {
     val updateQuery = AttendeeEventRelations
       .filter(aer => aer.attendeeId === attendeeId && aer.eventId === eventId)
       .map(aer => (aer.checkinTime, aer.created))
@@ -60,7 +61,7 @@ class SlickAttendanceDao(db: Database)(implicit ec: ExecutionContext) extends At
     db.run(updateQuery)
   }
 
-  override def markCheckout(attendeeId: Long, eventId: Long, checkoutTime: Timestamp): Future[Int] = {
+  override def markCheckout(attendeeId: Long, eventId: Long, checkoutTime: Instant): Future[Int] = {
     val updateQuery = AttendeeEventRelations
       .filter(aer => aer.attendeeId === attendeeId && aer.eventId === eventId)
       .map(aer => (aer.checkoutTime, aer.modified))

@@ -9,15 +9,11 @@ import com.joegitau.slick.dao.attendance.SlickAttendanceDao
 import com.joegitau.slick.dao.attendee.SlickAttendeeDao
 import com.joegitau.slick.dao.attendeeEventRelation.SlickAttendeeEventRelationDao
 import com.joegitau.slick.dao.event.SlickEventDao
-//import com.joegitau.slick.profile.CustomPostgresProfile.backend.Database
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 
 import scala.concurrent.duration.DurationInt
 
-object main extends EventService
-  with AttendeeService
-  with AttendeeEventRelationService
-  with AttendanceService {
+object server {
   val userGuardian: Behavior[NotUsed] = Behaviors.setup { context =>
     implicit val ec = context.system.executionContext
 

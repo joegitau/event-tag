@@ -3,13 +3,13 @@ package com.joegitau.slick.tables
 import com.joegitau.model.Attendance
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 
-import java.sql.Timestamp
+import java.time.Instant
 
 class AttendanceTable(tag: Tag) extends Table[Attendance](tag, "attendances") {
   def eventId      = column[Long]("event_id")
   def attendeeId   = column[Long]("attendee_id")
-  def checkinTime  = column[Option[Timestamp]]("checkin_time")
-  def checkoutTime = column[Option[Timestamp]]("checkout_time")
+  def checkinTime  = column[Option[Instant]]("checkin_time")
+  def checkoutTime = column[Option[Instant]]("checkout_time")
 
   def * = (eventId, attendeeId, checkinTime, checkoutTime) <> (Attendance.tupled, Attendance.unapply)
 

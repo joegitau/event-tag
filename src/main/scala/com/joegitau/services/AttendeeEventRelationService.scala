@@ -1,22 +1,22 @@
 package com.joegitau.services
 
-import com.joegitau.model.{Attendee, AttendeeEventRelation}
+import com.joegitau.model.Attendee
 import com.joegitau.slick.dao.attendeeEventRelation.AttendeeEventRelationDao
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AttendeeEventRelationService {
-  def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[AttendeeEventRelation]
+  def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int]
   def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int]
   def getAttendeeByEventId(eventId: Long, attendeeId: Long): Future[Option[Attendee]]
   def getAllAttendeesByEventId(eventId: Long): Future[Seq[Attendee]]
-  def deleteAttendeeEventRelation(id: Long): Future[Int]
+  def deleteAttendeeEventRelation(eventId: Long, attendeeId: Long): Future[Int]
   def attendeeEventRelationExists(attendeeId: Long, eventId: Long): Future[Boolean]
 }
 
 class AttendeeEventRelationServiceImpl(attendeeEventRelationDao: AttendeeEventRelationDao)
                                       (implicit ec: ExecutionContext) extends AttendeeEventRelationService {
-  override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[AttendeeEventRelation] =
+  override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int] =
     attendeeEventRelationDao.addAttendeeToEvent(eventId, attendeeId)
 
   override def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int] =
@@ -31,6 +31,6 @@ class AttendeeEventRelationServiceImpl(attendeeEventRelationDao: AttendeeEventRe
   override def attendeeEventRelationExists(attendeeId: Long, eventId: Long): Future[Boolean] =
     attendeeEventRelationExists(attendeeId, eventId)
 
-  override def deleteAttendeeEventRelation(id: Long): Future[Int] =
-    attendeeEventRelationDao.deleteAttendeeEventRelation(id)
+  override def deleteAttendeeEventRelation(eventId: Long, attendeeId: Long): Future[Int] =
+    attendeeEventRelationDao.deleteAttendeeEventRelation(eventId, attendeeId)
 }

@@ -4,14 +4,14 @@ import com.joegitau.slick.dao.attendance.AttendanceDao
 import com.joegitau.slick.dao.attendeeEventRelation.AttendeeEventRelationDao
 import com.joegitau.slick.dao.event.EventDao
 
-import java.sql.Timestamp
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AttendanceService {
   def markAttendance(eventId: Long,
                      attendeeId: Long,
-                     checkinTime: Option[Timestamp],
-                     checkoutTime: Option[Timestamp]
+                     checkinTime: Option[Instant],
+                     checkoutTime: Option[Instant]
                     ): Future[String]
 }
 
@@ -21,8 +21,8 @@ class AttendanceServiceImpl(attendanceDao: AttendanceDao,
                            )(implicit ec: ExecutionContext) extends AttendanceService {
   override def markAttendance(eventId: Long,
                               attendeeId: Long,
-                              checkinTime: Option[Timestamp],
-                              checkoutTime: Option[Timestamp]
+                              checkinTime: Option[Instant],
+                              checkoutTime: Option[Instant]
                              ): Future[String] = {
     for {
       eventOpt       <- eventDao.getEventById(eventId)
