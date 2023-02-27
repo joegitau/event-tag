@@ -2,8 +2,6 @@ package com.joegitau.actors
 
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
-import akka.pattern.StatusReply
-import akka.pattern.StatusReply.ErrorMessage
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationCommand
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationResponse.CheckAttendeeEventRelationRsp
 import com.joegitau.services.AttendeeEventRelationService
