@@ -1,10 +1,9 @@
 package com.joegitau.slick.dao.attendee
 
-import com.joegitau.model.{Attendee, PatchAttendee}
+import com.joegitau.model.Attendee
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.AttendeeTable.Attendees
 import com.joegitau.utils.Helpers.OptionFns
-// import slick.jdbc.JdbcBackend.Database
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,16 +29,17 @@ class SlickAttendeeDao(db: Database)(implicit ec: ExecutionContext) extends Atte
   override def getAllAttendees: Future[Seq[Attendee]] =
     db.run(Attendees.result)
 
-  override def updateAttendee(id: Long, attendee: PatchAttendee): Future[Option[Attendee]] = {
+  override def updateAttendee(id: Long, attendee: Attendee): Future[Option[Attendee]] = {
     val query = queryById(id)
 
     val updateAction = query.result.headOption.flatMap {
       case Some(existingAttendee) =>
         val updatedAttendee = existingAttendee.copy(
-          firstName = attendee.firstName.getOrElse(existingAttendee.firstName),
-          lastName  = attendee.lastName.getOrElse(existingAttendee.lastName),
-          company   = attendee.company.getOrElse(existingAttendee.company),
-          email     = attendee.email.getOrElse(existingAttendee.email),
+          firstName = attendee.firstName,
+          lastName  = attendee.lastName,
+          company   = attendee.company,
+          email     = attendee.email,
+          created   = existingAttendee.created,
           modified  = Instant.now().toOpt
         )
 

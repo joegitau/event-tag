@@ -1,6 +1,6 @@
 package com.joegitau.services
 
-import com.joegitau.model.{Attendee, Event, PatchEvent}
+import com.joegitau.model.{Attendee, Event}
 import com.joegitau.slick.dao.attendee.AttendeeDao
 import com.joegitau.slick.dao.attendeeEventRelation.AttendeeEventRelationDao
 import com.joegitau.slick.dao.event.EventDao
@@ -11,7 +11,7 @@ trait EventService {
   def createEvent(event: Event): Future[Event]
   def getEventById(eventId: Long): Future[Option[Event]]
   def getAllEvents: Future[Seq[Event]]
-  def updateEvent(id: Long, event: PatchEvent): Future[Option[Event]]
+  def updateEvent(id: Long, event: Event): Future[Option[Event]]
   def deleteEvent(id: Long): Future[String]
   def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[String]
   def removeAttendeeFromEvent(eventId: Long, attendeeId: Long): Future[Int]
@@ -31,7 +31,7 @@ class EventServiceImpl(eventDao: EventDao,
   override def getAllEvents: Future[Seq[Event]] =
     eventDao.getAllEvents
 
-  override def updateEvent(id: Long, event: PatchEvent): Future[Option[Event]] =
+  override def updateEvent(id: Long, event: Event): Future[Option[Event]] =
     eventDao.updateEvent(id, event)
 
   override def deleteEvent(id: Long): Future[String] =

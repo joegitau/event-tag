@@ -1,6 +1,6 @@
 package com.joegitau.services
 
-import com.joegitau.model.{Attendee, PatchAttendee}
+import com.joegitau.model.Attendee
 import com.joegitau.slick.dao.attendee.AttendeeDao
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -10,7 +10,7 @@ trait AttendeeService {
   def getAttendeeById(id: Long): Future[Option[Attendee]]
   def getAttendeeByLastName(lastName: String): Future[Option[Attendee]]
   def getAllAttendees: Future[Seq[Attendee]]
-  def updateAttendee(id: Long, attendee: PatchAttendee): Future[Option[Attendee]]
+  def updateAttendee(id: Long, attendee: Attendee): Future[Option[Attendee]]
   def deleteAttendee(id: Long): Future[String]
 }
 
@@ -27,7 +27,7 @@ class AttendeeServiceImpl(attendeeDao: AttendeeDao)(implicit ec: ExecutionContex
   override def getAllAttendees: Future[Seq[Attendee]] =
     attendeeDao.getAllAttendees
 
-  override def updateAttendee(id: Long, attendee: PatchAttendee): Future[Option[Attendee]] =
+  override def updateAttendee(id: Long, attendee: Attendee): Future[Option[Attendee]] =
     attendeeDao.updateAttendee(id, attendee)
 
   override def deleteAttendee(id: Long): Future[String] =
