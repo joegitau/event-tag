@@ -17,7 +17,7 @@ object AttendeeActor {
     ctx.log.info("::: Attendee actor started. :::")
 
     msg match {
-      case AttendeeCommand.createAttendee(attendee, replyTo)       =>
+      case AttendeeCommand.CreateAttendee(attendee, replyTo)       =>
         attendeeService.createAttendee(attendee).onComplete {
           case Success(attendee) => replyTo ! StatusReply.success(CreateAttendeeRsp(attendee))
           case Failure(ex)       => replyTo ! StatusReply.error(ErrorMessage(s"Failed to create attendee. ${ex.getMessage}"))
