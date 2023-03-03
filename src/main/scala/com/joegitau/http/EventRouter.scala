@@ -27,7 +27,7 @@ class EventRouter(eventActor: ActorRef[EventCommand])(implicit system: ActorSyst
       onSuccess(eventToCreate) {
         case StatusReply.Success(CreateEventRsp(event)) =>
           respondWithHeader(Location(s"/api/events/${event.id.getOrElse(0L)}")) {
-            complete(StatusCodes.Created -> s"Successfully create an event with id: ${event.id}")
+            complete(StatusCodes.Created -> s"Successfully created an event with id: ${event.id}")
           }
         case StatusReply.Error(reason)                  =>
           complete(StatusCodes.InternalServerError -> reason)

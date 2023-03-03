@@ -10,8 +10,8 @@ case class Event(
   startDate:   Instant,
   endDate:     Instant,
   organizer:   String,
-  created:     Option[Instant],
-  modified:    Option[Instant]
+  created:     Option[Instant] = Some(Instant.now()),
+  modified:    Option[Instant] = None
 )
 
 case class PatchEvent(

@@ -13,7 +13,7 @@ class EventDaoImpl(db: Database)(implicit ec: ExecutionContext) extends EventDao
 
   override def createEvent(event: Event): Future[Event] = {
     val insertEvent = (
-        Events returning Events.map(_.id) into ((event, projectedId) => event.copy(id = projectedId))
+        Events returning Events.map(e => (e.id, e.created)) into ((event, t) => event.copy(id = t._1, created = t._2))
       ) += event
 
     db.run(insertEvent)

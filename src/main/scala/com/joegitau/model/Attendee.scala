@@ -3,13 +3,13 @@ package com.joegitau.model
 import java.time.Instant
 
 case class Attendee(
-  id:        Option[Long]   = None,
+  id:        Option[Long]    = None,
   firstName: String,
   lastName:  String,
   company:   Option[String],
   email:     String,
-  created:   Option[Instant],
-  modified:  Option[Instant]
+  created:   Option[Instant] = Some(Instant.now()),
+  modified:  Option[Instant] = None
 )
 
 case class PatchAttendee(

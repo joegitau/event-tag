@@ -34,7 +34,7 @@ object EventActor {
 
       case EventCommand.GetAllEvents(replyTo)           =>
         eventService.getAllEvents.onComplete {
-          case Success(events) => replyTo ! StatusReply.success(GetAllEvents(events.toList))
+          case Success(events) => replyTo ! StatusReply.success(GetAllEventsRsp(events.toList))
           case Failure(ex)     => replyTo ! StatusReply.error(ErrorMessage(s"Failed to fetch events. ${ex.getMessage}"))
         }
         Behaviors.same
