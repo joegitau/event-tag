@@ -1,0 +1,6 @@
+# HTTPIE instances
+
+-- Events:
+http POST :8080/api/events/ title="Greatest Managers" description="Learn more about the greatest managers in world football - from guests such as: Jurgen Klopp, Pep Guardiola." location="123 Main St, Helsinki. Finland" startDate="2023-03-10T10:00:00Z" endDate="2023-03-10T12:00:00Z" organizer="Joe Gitau"
+
+-- Attendees

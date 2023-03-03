@@ -19,7 +19,7 @@ object EventProtocol {
   object EventResponse {
     case class CreateEventRsp(event: Event)                          extends EventResponse
     case class GetEventRsp(maybeEvent: Option[Event])                extends EventResponse
-    case class GetAllEvents(events: List[Event])                     extends EventResponse
+    case class GetAllEventsRsp(events: List[Event])                  extends EventResponse
     case class UpdateEventRsp(id: Long, updatedEvent: Option[Event]) extends EventResponse
     case class DeleteEventRsp(id: Long)                              extends EventResponse
   }
