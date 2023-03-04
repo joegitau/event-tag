@@ -1,12 +1,11 @@
 package com.joegitau.dao.relations
 
-import com.joegitau.model.{Attendee, AttendeeEventRelation}
+import com.joegitau.model.{Attendee, AttendeeEventRelation, Event}
 import com.joegitau.slick.profile.CustomPostgresProfile.api._
 import com.joegitau.slick.tables.AttendeeEventRelationTable.AttendeeEventRelations
 import com.joegitau.slick.tables.AttendeeTable.Attendees
-import com.joegitau.utils.Helpers.OptionFns
+import com.joegitau.slick.tables.EventTable.Events
 
-import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class AttendeeEventRelationDaoImpl(db: Database)(implicit ec: ExecutionContext) extends AttendeeEventRelationDao {
@@ -14,8 +13,7 @@ class AttendeeEventRelationDaoImpl(db: Database)(implicit ec: ExecutionContext) 
   private def queryByAttendeeId(attendeeId: Long) = Compiled(AttendeeEventRelations.filter(_.attendeeId === attendeeId))
 
   override def addAttendeeToEvent(eventId: Long, attendeeId: Long): Future[Int] = {
-    val aer    = AttendeeEventRelation(eventId, attendeeId, None, None, Instant.now().toOpt, None)
-    val action = AttendeeEventRelations += aer
+    val action = AttendeeEventRelations += AttendeeEventRelation(eventId, attendeeId)
 
     db.run(action)
   }
@@ -26,6 +24,16 @@ class AttendeeEventRelationDaoImpl(db: Database)(implicit ec: ExecutionContext) 
       .delete
 
     db.run(removeQuery)
+  }
+
+  override def getEventsForAttendee(attendeeId: Long): Future[Seq[Event]] = {
+    val query = for {
+      relation <- AttendeeEventRelations if relation.attendeeId === attendeeId
+      eventId  = relation.eventId
+      event    <- Events.filter(_.id == eventId)
+    } yield event
+
+    db.run(query.result)
   }
 
   override def getAttendeeByEventId(eventId: Long, attendeeId: Long): Future[Option[Attendee]] = {

@@ -31,8 +31,6 @@ CREATE TABLE attendees (
 CREATE TABLE attendee_event_relations (
     "event_id"    BIGSERIAL     NOT NULL,
     "attendee_id" BIGSERIAL     NOT NULL,
-    "created"     timestamptz   NOT NULL DEFAULT NOW(),
-    "modified"    timestamptz,
     PRIMARY KEY   (attendee_id, event_id), -- composite key
     FOREIGN KEY   (event_id)    REFERENCES events (id)    ON DELETE CASCADE,
     FOREIGN KEY   (attendee_id) REFERENCES attendees (id) ON DELETE CASCADE

@@ -34,5 +34,5 @@ trait JsonMarshaller extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val eventFormat: RootJsonFormat[Event]                            = jsonFormat9(Event)
   implicit val attendeeFormat: RootJsonFormat[Attendee]                      = jsonFormat7(Attendee)
   implicit val attendanceFormat: RootJsonFormat[Attendance]                  = jsonFormat4(Attendance)
-  implicit val attEventRelationFormat: RootJsonFormat[AttendeeEventRelation] = jsonFormat6(AttendeeEventRelation)
+  implicit val attEventRelationFormat: RootJsonFormat[AttendeeEventRelation] = jsonFormat2(AttendeeEventRelation)
 }
