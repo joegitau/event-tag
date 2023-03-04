@@ -5,6 +5,6 @@ case class AttendeeEventRelation(
   attendeeId: Long
 )
 
-case class EventWithAttendees(event: Event, attendees: Seq[Attendee])
+case class EventWithAttendees(eventId: Long, attendees: Seq[Attendee])
 
-case class AttendeeWithEvents(attendee: Attendee, events: Seq[Event])
+case class AttendeeWithEvents(attendeeId: Long, events: Seq[Event])

@@ -2,9 +2,13 @@ package com.joegitau.actors
 
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
+import akka.pattern.StatusReply
+import akka.pattern.StatusReply.ErrorMessage
+import com.joegitau.model.{AttendeeWithEvents, EventWithAttendees}
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationCommand
-import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationResponse.CheckAttendeeEventRelationRsp
+import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationResponse.{AddAttendeeToEventRsp, CheckAttendeeEventRelationRsp, GetAttendeeWithEventsRsp, GetEventWithAttendeesRsp}
 import com.joegitau.services.AttendeeEventRelationService
+import com.joegitau.utils.Helpers.OptionFns
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.util.{Failure, Success}
@@ -16,11 +20,42 @@ object AttendeeEventRelationActor {
     ctx.log.info("::: AttendeeEventRelation actor started. :::")
 
     msg match {
+      case AttendeeEventRelationCommand.AddAttendeeToEvent(eventId, attendeeId, replyTo)         =>
+        attendeeEventRelationService.addAttendeeToEvent(eventId, attendeeId).onComplete {
+          case Success(_)  =>
+            replyTo ! StatusReply.success(AddAttendeeToEventRsp(eventId, attendeeId))
+          case Failure(ex) =>
+            replyTo ! StatusReply.error(ErrorMessage(s"Could not add attendee: $attendeeId to event: $eventId : ${ex.getMessage}"))
+        }
+
+        Behaviors.same
+
+      case AttendeeEventRelationCommand.GetEventWithAttendees(eventId, replyTo)                  =>
+        attendeeEventRelationService.getAllAttendeesByEventId(eventId).onComplete {
+          case Success(attendees) =>
+            replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, attendees).toOpt))
+          case Failure(_)        =>
+            // we could return some error, but lets assume the event does exist, though it doesn't have any attendees
+            replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, Seq.empty).toOpt))
+        }
+
+        Behaviors.same
+
+      case AttendeeEventRelationCommand.GetAttendeeWithEvents(attendeeId, replyTo)               =>
+        attendeeEventRelationService.getEventsForAttendee(attendeeId).onComplete {
+          case Success(events) =>
+            replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, events).toOpt))
+          case Failure(_)     =>
+            replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, Seq.empty).toOpt))
+        }
+
+        Behaviors.same
+
       case AttendeeEventRelationCommand.CheckAttendeeEventRelation(attendeeId, eventId, replyTo) =>
         attendeeEventRelationService.attendeeEventRelationExists(attendeeId, eventId).onComplete {
           case Success(exists) =>
             replyTo ! CheckAttendeeEventRelationRsp(exists)
-          case Failure(ex)     =>
+          case Failure(_)      =>
             replyTo ! CheckAttendeeEventRelationRsp(false)
 
         }
