@@ -27,13 +27,15 @@ class AttendeeEventRelationDaoImpl(db: Database)(implicit ec: ExecutionContext) 
   }
 
   override def getEventsForAttendee(attendeeId: Long): Future[Seq[Event]] = {
-    val query = for {
-      relation <- AttendeeEventRelations if relation.attendeeId === attendeeId
-      eventId  = relation.eventId
-      event    <- Events.filter(_.id == eventId)
-    } yield event
+    val joinQuery = AttendeeEventRelations
+      .filter(_.attendeeId === attendeeId)
+      .join(Events) on((aer, e) => aer.eventId === e.id)
 
-    db.run(query.result)
+    val result = joinQuery
+      .map { case (_, eventTbl) => eventTbl }
+      .result
+
+    db.run(result)
   }
 
   override def getAttendeeByEventId(eventId: Long, attendeeId: Long): Future[Option[Attendee]] = {

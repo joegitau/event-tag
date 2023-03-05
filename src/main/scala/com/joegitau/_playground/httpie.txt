@@ -22,3 +22,5 @@ http POST :8080/api/attendees \
 
 -- Relations
 	http POST :8080/api/relations/attendee/1/event/1
+	http :8080/api/relations/events/1
+	http :8080/api/relations/attendees/1
