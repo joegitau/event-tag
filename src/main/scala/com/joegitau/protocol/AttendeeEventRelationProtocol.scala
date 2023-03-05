@@ -27,7 +27,7 @@ object AttendeeEventRelationProtocol {
     case class CheckAttendeeEventRelation(
       attendeeId: Long,
       eventId:    Long,
-      replyTo:    ActorRef[AttendeeEventRelationResponse]
+      replyTo:    ActorRef[Boolean]
     ) extends AttendeeEventRelationCommand
   }
 
@@ -36,7 +36,6 @@ object AttendeeEventRelationProtocol {
     case class AddAttendeeToEventRsp(eventId: Long, attendeeId: Long)                   extends AttendeeEventRelationResponse
     case class GetEventWithAttendeesRsp(eventWithAttendees: Option[EventWithAttendees]) extends AttendeeEventRelationResponse
     case class GetAttendeeWithEventsRsp(eventWithAttendees: Option[AttendeeWithEvents]) extends AttendeeEventRelationResponse
-    case class CheckAttendeeEventRelationRsp(exists: Boolean)                           extends AttendeeEventRelationResponse
   }
 
 }

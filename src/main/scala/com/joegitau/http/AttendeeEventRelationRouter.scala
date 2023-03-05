@@ -7,29 +7,36 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.pattern.StatusReply
 import akka.util.Timeout
-import com.joegitau.model.AttendeeEventRelation
-import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationCommand
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationCommand._
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationResponse._
+import com.joegitau.protocol.AttendeeEventRelationProtocol._
 
 import scala.concurrent.duration.DurationInt
+import scala.concurrent.{ExecutionContextExecutor, Future}
 
 class AttendeeEventRelationRouter(attendeeEventRelActor: ActorRef[AttendeeEventRelationCommand])
                                  (implicit system: ActorSystem[_]) extends JsonMarshaller {
-  implicit val scheduler: Scheduler = system.scheduler
-  implicit val timeout: Timeout     = 3.seconds
+  implicit val scheduler: Scheduler         = system.scheduler
+  implicit val ec: ExecutionContextExecutor = system.executionContext
+  implicit val timeout: Timeout             = 3.seconds
 
-  def addAttendeeToEvent: Route = {
-    entity(as[AttendeeEventRelation]) { attendeeEventRel =>
-      val eventId    = attendeeEventRel.eventId
-      val attendeeId = attendeeEventRel.attendeeId
-      val toCreate = attendeeEventRelActor.ask(AddAttendeeToEvent(eventId, attendeeId, _))
+  // api/relations/attendee/${attendeeId}/event/${eventId}
+  def addAttendeeToEvent(attendeeId: Long, eventId: Long): Route = {
+    val relationExists: Future[Boolean] = attendeeEventRelActor.ask(CheckAttendeeEventRelation(attendeeId, eventId, _))
+    val relationToCreate                = attendeeEventRelActor.ask(AddAttendeeToEvent(eventId, attendeeId, _))
 
-      onSuccess(toCreate) {
-        case StatusReply.Success(AddAttendeeToEventRsp(eventId, attendeeId)) =>
-          complete(StatusCodes.Created -> s"Attendee with id: $attendeeId successfully added to event with id: $eventId")
-        case StatusReply.Error(reason)                                       =>
-          complete(StatusCodes.InternalServerError -> reason)
+    val combined: Future[(Boolean, StatusReply[AttendeeEventRelationResponse])] = relationExists.zip(relationToCreate)
+
+    onSuccess(combined) { (exists, relation) =>
+      if (!exists) {
+        relation match {
+          case StatusReply.Success(AddAttendeeToEventRsp(eventId, attendeeId)) =>
+            complete(StatusCodes.Created -> s"Attendee with id: $attendeeId successfully added to event with id: $eventId")
+          case _                                                               =>
+            complete(StatusCodes.BadRequest -> "Relation can't be processed!")
+        }
+      } else {
+        complete(StatusCodes.Conflict -> s"Attendee with id: $attendeeId already belongs to event with id: $eventId")
       }
     }
   }
@@ -64,8 +71,8 @@ class AttendeeEventRelationRouter(attendeeEventRelActor: ActorRef[AttendeeEventR
 
   val routes: Route = pathPrefix("relations") {
     concat(
-      pathEnd {
-        post { addAttendeeToEvent }
+      path("attendee" / LongNumber / "event" / LongNumber) { (attendeeId, eventId) =>
+        post { addAttendeeToEvent(attendeeId, eventId) }
       },
       path("attendees" / LongNumber) { attendeeId => // /api/relations/attendees/1
         get { getAttendeeWithEvents(attendeeId) }

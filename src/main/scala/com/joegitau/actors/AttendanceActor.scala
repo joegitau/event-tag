@@ -10,7 +10,6 @@ import com.joegitau.protocol.AttendanceProtocol.AttendanceCommand
 import com.joegitau.protocol.AttendanceProtocol.AttendanceResponse.{AttendanceMarkedRsp, AttendanceNotMarkedRsp}
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationCommand
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationCommand.CheckAttendeeEventRelation
-import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationResponse.CheckAttendeeEventRelationRsp
 import com.joegitau.services.AttendanceService
 
 import scala.concurrent.ExecutionContext
@@ -30,17 +29,13 @@ object AttendanceActor {
       case AttendanceCommand.MarkAttendance(eventId, attendeeId, checkinTime, checkoutTime, replyTo) =>
         attendeeEventRelActorRef.ask(CheckAttendeeEventRelation(attendeeId, eventId, _))
           .onComplete {
-            case Success(resp) => resp match {
-              case CheckAttendeeEventRelationRsp(exists) =>
-                if (exists) {
-                  attendanceService.markAttendance(eventId, attendeeId, checkinTime, checkoutTime)
-
-                  replyTo ! StatusReply.success(AttendanceMarkedRsp(eventId, attendeeId))
-                } else {
-                  replyTo ! StatusReply.success(AttendanceNotMarkedRsp("Attendee has no relation to this event!"))
-                }
-              case _                                     => () // we don't care about the rest!
-            }
+            case Success(exists) =>
+              if (exists) {
+                attendanceService.markAttendance(eventId, attendeeId, checkinTime, checkoutTime)
+                replyTo ! StatusReply.success(AttendanceMarkedRsp(eventId, attendeeId))
+              } else {
+                replyTo ! StatusReply.success(AttendanceNotMarkedRsp("Attendee has no relation to this event!"))
+              }
             case Failure(ex)   =>
               replyTo ! StatusReply.error(ErrorMessage(s"Failed to check attendee event relation: ${ex.getMessage}"))
         }
@@ -49,16 +44,3 @@ object AttendanceActor {
     }
   }
 }
-
-/* for {
-    relationRsp <- attendeeEventRelActorRef.ask(CheckAttendeeEventRelation(attendeeId, eventId, _))
-    result      = relationRsp match {
-      case CheckAttendeeEventRelationRsp(exists) =>
-        if (exists) {
-          attendanceService.markAttendance(eventId, attendeeId, checkinTime, checkoutTime)
-          replyTo ! StatusReply.success(AttendanceMarkedRsp(eventId, attendeeId))
-        } else {
-          replyTo ! StatusReply.success(AttendanceNotMarkedRsp("Attendee has no relation to this event!"))
-        }
-    }
-  } yield result */

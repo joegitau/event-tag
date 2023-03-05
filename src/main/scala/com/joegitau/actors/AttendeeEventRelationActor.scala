@@ -14,62 +14,60 @@ import scala.concurrent.ExecutionContextExecutor
 import scala.util.{Failure, Success}
 
 object AttendeeEventRelationActor {
-  def apply(attendeeEventRelationService: AttendeeEventRelationService): Behavior[AttendeeEventRelationCommand] = Behaviors.receive { (ctx, msg) =>
-    implicit val ec: ExecutionContextExecutor = ctx.system.executionContext
+  def apply(attendeeEventRelationService: AttendeeEventRelationService): Behavior[AttendeeEventRelationCommand] =
+    Behaviors.receive { (ctx, msg) =>
+      implicit val ec: ExecutionContextExecutor = ctx.system.executionContext
 
-    ctx.log.info("::: AttendeeEventRelation actor started. :::")
+      ctx.log.info("::: AttendeeEventRelation actor started. :::")
 
-    msg match {
-      case AttendeeEventRelationCommand.AddAttendeeToEvent(eventId, attendeeId, replyTo)         =>
-        attendeeEventRelationService.addAttendeeToEvent(eventId, attendeeId).onComplete {
-          case Success(_)  =>
-            replyTo ! StatusReply.success(AddAttendeeToEventRsp(eventId, attendeeId))
-          case Failure(ex) =>
-            replyTo ! StatusReply.error(ErrorMessage(s"Could not add attendee: $attendeeId to event: $eventId : ${ex.getMessage}"))
-        }
+      msg match {
+        case AttendeeEventRelationCommand.AddAttendeeToEvent(eventId, attendeeId, replyTo)         =>
+          attendeeEventRelationService.addAttendeeToEvent(eventId, attendeeId).onComplete {
+            case Success(_)  =>
+              replyTo ! StatusReply.success(AddAttendeeToEventRsp(eventId, attendeeId))
+            case Failure(ex) =>
+              replyTo ! StatusReply.error(ErrorMessage(s"Could not add attendee: $attendeeId to event: $eventId : ${ex.getMessage}"))
+          }
 
-        Behaviors.same
+          Behaviors.same
 
-      case AttendeeEventRelationCommand.GetEventWithAttendees(eventId, replyTo)                  =>
-        attendeeEventRelationService.getAllAttendeesByEventId(eventId).onComplete {
-          case Success(attendees) =>
-            if (attendees.nonEmpty) {
-              replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, attendees).toOpt))
-            } else {
-              replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, Seq.empty).toOpt))
-            }
-          case Failure(ex)        =>
-            replyTo ! StatusReply.error(ErrorMessage(s"Event with id: $eventId not found. : ${ex.getMessage}"))
-        }
+        case AttendeeEventRelationCommand.GetEventWithAttendees(eventId, replyTo)                  =>
+          attendeeEventRelationService.getAllAttendeesByEventId(eventId).onComplete {
+            case Success(attendees) =>
+              if (attendees.nonEmpty) {
+                replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, attendees).toOpt))
+              } else {
+                replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, Seq.empty).toOpt))
+              }
+            case Failure(ex)        =>
+              replyTo ! StatusReply.error(ErrorMessage(s"Event with id: $eventId not found. : ${ex.getMessage}"))
+          }
 
-        Behaviors.same
+          Behaviors.same
 
-      case AttendeeEventRelationCommand.GetAttendeeWithEvents(attendeeId, replyTo)               =>
-        attendeeEventRelationService.getEventsForAttendee(attendeeId).onComplete {
-          case Success(events) =>
-            if (events.nonEmpty) {
-              replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, events).toOpt))
-            } else {
-              replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, Seq.empty).toOpt))
-            }
-          case Failure(ex)     =>
-            replyTo ! StatusReply.error(ErrorMessage(s"Attendee with id: $attendeeId not found. : ${ex.getMessage}"))
-        }
+        case AttendeeEventRelationCommand.GetAttendeeWithEvents(attendeeId, replyTo)               =>
+          attendeeEventRelationService.getEventsForAttendee(attendeeId).onComplete {
+            case Success(events) =>
+              if (events.nonEmpty) {
+                replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, events).toOpt))
+              } else {
+                replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, Seq.empty).toOpt))
+              }
+            case Failure(ex)     =>
+              replyTo ! StatusReply.error(ErrorMessage(s"Attendee with id: $attendeeId not found. : ${ex.getMessage}"))
+          }
 
-        Behaviors.same
+          Behaviors.same
 
-      case AttendeeEventRelationCommand.CheckAttendeeEventRelation(attendeeId, eventId, replyTo) =>
-        attendeeEventRelationService.attendeeEventRelationExists(attendeeId, eventId).onComplete {
-          case Success(exists) =>
-            replyTo ! CheckAttendeeEventRelationRsp(exists)
-          case Failure(_)      =>
-            replyTo ! CheckAttendeeEventRelationRsp(false)
-        }
+        case AttendeeEventRelationCommand.CheckAttendeeEventRelation(attendeeId, eventId, replyTo) =>
+          attendeeEventRelationService.attendeeEventRelationExists(attendeeId, eventId).onComplete {
+            case Success(exists) => replyTo ! exists
+            case Failure(_)      => replyTo ! false
+          }
 
-        Behaviors.same
+          Behaviors.same
+      }
     }
-  }
-
 }
  /**
   * NOTES:
