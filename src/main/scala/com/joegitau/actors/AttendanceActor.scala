@@ -39,9 +39,10 @@ object AttendanceActor {
                 } else {
                   replyTo ! StatusReply.success(AttendanceNotMarkedRsp("Attendee has no relation to this event!"))
                 }
+              case _                                     => () // we don't care about the rest!
             }
-            case Failure(exception) =>
-              replyTo ! StatusReply.error(ErrorMessage(s"Failed to check attendee event relation: ${exception.getMessage}"))
+            case Failure(ex)   =>
+              replyTo ! StatusReply.error(ErrorMessage(s"Failed to check attendee event relation: ${ex.getMessage}"))
         }
 
         Behaviors.same

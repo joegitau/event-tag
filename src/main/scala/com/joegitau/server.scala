@@ -66,7 +66,7 @@ object server {
     val attendanceActor       = context.spawn(AttendanceActor(attendanceService, attendeeEventRelActor), "attendance-actor")
 
     // routes
-    val coreRoutes = new CoreRouter(eventActor, attendeeActor, attendanceActor).coreRoutes
+    val coreRoutes = new CoreRouter(eventActor, attendeeActor, attendanceActor, attendeeEventRelActor).coreRoutes
 
     // start server
     startHttpServer(coreRoutes)

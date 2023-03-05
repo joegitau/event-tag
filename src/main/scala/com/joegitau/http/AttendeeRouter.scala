@@ -28,7 +28,8 @@ class AttendeeRouter(attendeeActor: ActorRef[AttendeeCommand])(implicit system: 
           respondWithHeader(Location(s"/api/attendees/${attendee.id.getOrElse(0L)}")) {
             complete(StatusCodes.Created, s"Successfully created attendee with id: ${attendee.id}")
           }
-        case StatusReply.Error(reason)                        => complete(StatusCodes.InternalServerError -> reason)
+        case StatusReply.Error(reason)                        =>
+          complete(StatusCodes.InternalServerError -> reason)
       }
     }
   }
@@ -37,8 +38,13 @@ class AttendeeRouter(attendeeActor: ActorRef[AttendeeCommand])(implicit system: 
     val probableAttendee = attendeeActor.ask(GetAttendee(id, _))
 
     onSuccess(probableAttendee) {
-      case StatusReply.Success(GetAttendeeRsp(attendeeOpt)) => complete(StatusCodes.OK -> attendeeOpt)
-      case StatusReply.Error(reason)                        => complete(StatusCodes.NotFound -> reason)
+      case StatusReply.Success(GetAttendeeRsp(attendeeOpt)) =>
+        attendeeOpt match {
+          case Some(attendee) => complete(StatusCodes.OK -> attendee)
+          case None           => complete(StatusCodes.NotFound -> s"Attendee with id: $id not found.")
+        }
+      case StatusReply.Error(reason)                        =>
+        complete(StatusCodes.InternalServerError -> reason)
     }
   }
 
@@ -52,7 +58,8 @@ class AttendeeRouter(attendeeActor: ActorRef[AttendeeCommand])(implicit system: 
         } else {
           complete(StatusCodes.OK -> "No attendees found!")
         }
-      case StatusReply.Error(reason)                       => complete(StatusCodes.NotFound -> reason)
+      case StatusReply.Error(reason)                       =>
+        complete(StatusCodes.NotFound -> reason)
     }
   }
 
@@ -61,8 +68,13 @@ class AttendeeRouter(attendeeActor: ActorRef[AttendeeCommand])(implicit system: 
       val toUpdate = attendeeActor.ask(UpdateAttendee(id, attendee, _))
 
       onSuccess(toUpdate) {
-        case StatusReply.Success(UpdateAttendeeRsp(attendeeOpt)) => complete(StatusCodes.OK -> attendeeOpt)
-        case StatusReply.Error(reason)                           => complete(StatusCodes.InternalServerError -> reason)
+        case StatusReply.Success(UpdateAttendeeRsp(attendeeOpt)) =>
+          attendeeOpt match {
+            case Some(attendee) => complete(StatusCodes.OK -> attendee)
+            case None           => complete(StatusCodes.NotFound -> s"Could not update as attendee with id: $id not found.")
+          }
+        case StatusReply.Error(reason)                           =>
+          complete(StatusCodes.InternalServerError -> reason)
       }
     }
   }

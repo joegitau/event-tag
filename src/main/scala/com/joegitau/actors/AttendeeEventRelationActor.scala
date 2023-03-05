@@ -6,7 +6,7 @@ import akka.pattern.StatusReply
 import akka.pattern.StatusReply.ErrorMessage
 import com.joegitau.model.{AttendeeWithEvents, EventWithAttendees}
 import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationCommand
-import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationResponse.{AddAttendeeToEventRsp, CheckAttendeeEventRelationRsp, GetAttendeeWithEventsRsp, GetEventWithAttendeesRsp}
+import com.joegitau.protocol.AttendeeEventRelationProtocol.AttendeeEventRelationResponse._
 import com.joegitau.services.AttendeeEventRelationService
 import com.joegitau.utils.Helpers.OptionFns
 
@@ -33,10 +33,13 @@ object AttendeeEventRelationActor {
       case AttendeeEventRelationCommand.GetEventWithAttendees(eventId, replyTo)                  =>
         attendeeEventRelationService.getAllAttendeesByEventId(eventId).onComplete {
           case Success(attendees) =>
-            replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, attendees).toOpt))
-          case Failure(_)        =>
-            // we could return some error, but lets assume the event does exist, though it doesn't have any attendees
-            replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, Seq.empty).toOpt))
+            if (attendees.nonEmpty) {
+              replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, attendees).toOpt))
+            } else {
+              replyTo ! StatusReply.success(GetEventWithAttendeesRsp(EventWithAttendees(eventId, Seq.empty).toOpt))
+            }
+          case Failure(ex)        =>
+            replyTo ! StatusReply.error(ErrorMessage(s"Event with id: $eventId not found. : ${ex.getMessage}"))
         }
 
         Behaviors.same
@@ -44,9 +47,13 @@ object AttendeeEventRelationActor {
       case AttendeeEventRelationCommand.GetAttendeeWithEvents(attendeeId, replyTo)               =>
         attendeeEventRelationService.getEventsForAttendee(attendeeId).onComplete {
           case Success(events) =>
-            replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, events).toOpt))
-          case Failure(_)     =>
-            replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, Seq.empty).toOpt))
+            if (events.nonEmpty) {
+              replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, events).toOpt))
+            } else {
+              replyTo ! StatusReply.success(GetAttendeeWithEventsRsp(AttendeeWithEvents(attendeeId, Seq.empty).toOpt))
+            }
+          case Failure(ex)     =>
+            replyTo ! StatusReply.error(ErrorMessage(s"Attendee with id: $attendeeId not found. : ${ex.getMessage}"))
         }
 
         Behaviors.same
@@ -57,7 +64,6 @@ object AttendeeEventRelationActor {
             replyTo ! CheckAttendeeEventRelationRsp(exists)
           case Failure(_)      =>
             replyTo ! CheckAttendeeEventRelationRsp(false)
-
         }
 
         Behaviors.same
