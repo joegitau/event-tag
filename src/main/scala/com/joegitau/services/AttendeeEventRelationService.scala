@@ -33,7 +33,7 @@ class AttendeeEventRelationServiceImpl(attendeeEventRelationDao: AttendeeEventRe
     attendeeEventRelationDao.getAllAttendeesByEventId(eventId)
 
   override def attendeeEventRelationExists(attendeeId: Long, eventId: Long): Future[Boolean] =
-    attendeeEventRelationExists(attendeeId, eventId)
+    attendeeEventRelationDao.attendeeEventRelationExists(attendeeId, eventId)
 
   override def deleteAttendeeEventRelation(eventId: Long, attendeeId: Long): Future[Int] =
     attendeeEventRelationDao.deleteAttendeeEventRelation(eventId, attendeeId)

@@ -21,4 +21,4 @@ http POST :8080/api/attendees \
   modified="2023-03-10T12:00:00Z"
 
 -- Relations
-	http POST :8080/api/relations/
+	http POST :8080/api/relations/attendee/1/event/1
