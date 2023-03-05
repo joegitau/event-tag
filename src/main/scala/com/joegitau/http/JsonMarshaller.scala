@@ -1,7 +1,7 @@
 package com.joegitau.http
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import com.joegitau.model.{Attendance, Attendee, AttendeeEventRelation, Event}
+import com.joegitau.model.{Attendance, Attendee, AttendeeEventRelation, AttendeeWithEvents, Event, EventWithAttendees}
 import spray.json.{DefaultJsonProtocol, JsNull, JsNumber, JsString, JsValue, RootJsonFormat, deserializationError}
 
 import java.time.Instant
@@ -35,4 +35,6 @@ trait JsonMarshaller extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val attendeeFormat: RootJsonFormat[Attendee]                      = jsonFormat7(Attendee)
   implicit val attendanceFormat: RootJsonFormat[Attendance]                  = jsonFormat4(Attendance)
   implicit val attEventRelationFormat: RootJsonFormat[AttendeeEventRelation] = jsonFormat2(AttendeeEventRelation)
+  implicit val eventWithAttendeeFormat: RootJsonFormat[EventWithAttendees]   = jsonFormat2(EventWithAttendees)
+  implicit val attendeeWithEventsFormat: RootJsonFormat[AttendeeWithEvents]  = jsonFormat2(AttendeeWithEvents)
 }
